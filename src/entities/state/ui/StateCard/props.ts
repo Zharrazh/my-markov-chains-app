@@ -1,8 +1,8 @@
-import type { Transition } from '@entities/transition';
-import type { State } from '../../types';
+import type { TransitionDTO } from '@entities/transition';
+import type { StateDTO } from '../../types';
 
 export interface StateCardProps {
-  state: State;
-  associatedTranslations?: Transition[];
+  state: StateDTO;
+  associatedTranslations?: TransitionDTO[];
   onClick?: () => void;
 }

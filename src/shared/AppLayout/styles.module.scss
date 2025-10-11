@@ -1,0 +1,19 @@
+.appLayout {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    grid-template-areas: "workspace sidebar";
+}
+  
+  .workspace {
+    grid-area: workspace;
+    border-right: 1px solid #ddd;
+    overflow: auto;
+  }
+  
+  .sidebar {
+    grid-area: sidebar;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  

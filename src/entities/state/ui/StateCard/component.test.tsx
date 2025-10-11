@@ -1,22 +1,22 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { StateCard } from './StateCard';
-import type { State } from '../../types';
-import type { Transition } from '@entities/transition';
+import type { StateDTO } from '../../types';
+import type { TransitionDTO } from '@entities/transition';
 
 // Создаём состояния как экземпляры классов
-const mockState: State = {
+const mockState: StateDTO = {
   id: 'state1',
   label: 'Start State',
   description: 'This is the starting state',
 };
-const state2: State = {
+const state2: StateDTO = {
   id: 'state2',
   label: 'Next State',
   description: 'Next state description',
 };
 
 // Создаём переход как экземпляр класса Transition
-const transitions: Transition[] = [
+const transitions: TransitionDTO[] = [
   {
     id: 'trans1',
     fromStateId: mockState.id,

@@ -1,5 +1,5 @@
-import type { Transition } from '../../types';
+import type { TransitionDTO } from '../../types';
 
 export interface TransitionRowProps {
-  transition: Transition;
+  transition: TransitionDTO;
 }
