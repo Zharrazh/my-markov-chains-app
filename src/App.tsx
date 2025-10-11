@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { StateCard, type State } from '@entities/state';
+import type { Transition } from '@entities/transition';
+
+const mockState: State = {
+  id: 'state1',
+  label: 'Start State',
+  description: 'This is the starting state',
+};
+
+const state2: State = {
+  id: 'state2',
+  label: 'Next State',
+  description: 'Next state description',
+};
+
+const associatedTranslations: Transition[] = [
+  {
+    id: 'trans1',
+    fromStateId: mockState.id,
+    toStateId: state2.id,
+    probability: 1,
+    label: 'to next',
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  return <StateCard state={mockState} associatedTranslations={associatedTranslations} />;
 }
 
-export default App
+export default App;
