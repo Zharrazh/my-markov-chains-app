@@ -5,9 +5,9 @@ import { TransitionRow } from '@entities/transition';
 
 const MAX_TRANSITIONS_TO_SHOW = 5; // Максимальное количество переходов для показа
 
-export const StateCard: FC<StateCardProps> = ({ state, associatedTranslations, onClick }) => {
-  const transitionsCount = associatedTranslations?.length ?? 0;
-  const visibleTransitions = associatedTranslations?.slice(0, MAX_TRANSITIONS_TO_SHOW) ?? [];
+export const StateCard: FC<StateCardProps> = ({ state, onClick }) => {
+  const transitionsCount = state.transitions?.length ?? 0;
+  const visibleTransitions = state.transitions?.slice(0, MAX_TRANSITIONS_TO_SHOW) ?? [];
 
   return (
     <div

@@ -14,37 +14,60 @@ export interface ChainDTO {
 }
 
 export class ChainEntity {
-  private chain: ChainDTO;
-  private statesMap: Map<string, StateEntity>;
-  private transitionsMap: Map<string, TransitionEntity>;
+  public readonly chainDTO: ChainDTO;
+  public readonly states: StateDTO[];
+  public readonly statesMap: Map<string, StateDTO>;
+  public readonly transitions: TransitionDTO[];
+  public readonly transitionsMap: Map<string, TransitionDTO>;
+  public readonly transitionsFromIdMap: { [fromStateId: string]: TransitionDTO[] };
 
   constructor(chain: ChainDTO) {
-    this.chain = chain;
-    this.statesMap = new Map(chain.states.map((s) => [s.id, new StateEntity(s)]));
-    this.transitionsMap = new Map(chain.transitions.map((t) => [t.id, new TransitionEntity(t)]));
+    this.chainDTO = chain;
+    this.states = chain.states;
+    this.statesMap = new Map(chain.states.map((s) => [s.id, s]));
+    this.transitions = chain.transitions;
+    this.transitionsMap = new Map(chain.transitions.map((t) => [t.id, t]));
+    this.transitionsFromIdMap = chain.transitions.reduce(
+      (prev, trans) => ({
+        ...prev,
+        [trans.fromStateId]: [...(prev[trans.fromStateId] ?? []), trans],
+      }),
+      {} as { [fromStateId: string]: TransitionDTO[] },
+    );
   }
 
-  getState(id: string): StateEntity | undefined {
-    return this.statesMap.get(id);
+  getState(id: string): StateEntity | null {
+    const dto = this.statesMap.get(id);
+    if (dto) {
+      const transitionsFromThis = this.transitionsFromIdMap[id] ?? [];
+
+      return new StateEntity(dto, transitionsFromThis);
+    }
+    return null;
   }
 
-  getTransition(id: string): TransitionEntity | undefined {
-    return this.transitionsMap.get(id);
+  getTransition(id: string): TransitionEntity | null {
+    const dto = this.transitionsMap.get(id);
+    if (dto) {
+      return new TransitionEntity(dto);
+    }
+
+    return null;
   }
 
   addState(stateDto: StateDTO): ChainEntity {
-    const newStates = [...this.chain.states, stateDto];
-    const newChain = { ...this.chain, states: newStates };
+    const newStates = [...this.chainDTO.states, stateDto];
+    const newChain = { ...this.chainDTO, states: newStates };
     return new ChainEntity(newChain);
   }
 
   addTransition(transitionDto: TransitionDTO): ChainEntity {
-    const newTransitions = [...this.chain.transitions, transitionDto];
-    const newChain = { ...this.chain, transitions: newTransitions };
+    const newTransitions = [...this.chainDTO.transitions, transitionDto];
+    const newChain = { ...this.chainDTO, transitions: newTransitions };
     return new ChainEntity(newChain);
   }
 
   getChain(): ChainDTO {
-    return this.chain;
+    return this.chainDTO;
   }
 }

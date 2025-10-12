@@ -1,5 +1,5 @@
-import { ChainDTO, ChainFlow } from '@entities/chain';
-import { StateCard, type StateDTO } from '@entities/state';
+import { ChainDTO, ChainEntity, ChainFlow } from '@entities/chain';
+import { StateCard, StateEntity, type StateDTO } from '@entities/state';
 import { TransitionRow, type TransitionDTO } from '@entities/transition';
 import { AppLayout } from '@shared/AppLayout';
 import { useState } from 'react';
@@ -59,30 +59,35 @@ const exampleChain: ChainDTO = {
   ],
 };
 
+const chain = new ChainEntity(exampleChain);
+
 export default function App() {
-  const [selectedNode, setSelectedNode] = useState<StateDTO | null>(null);
-  const [selectedEdge, setSelectedEdge] = useState<TransitionDTO | null>(null);
+  const [selectedState, setSelectedState] = useState<StateEntity | null>(null);
+  const [selectedTransition, setSelectedTransition] = useState<TransitionDTO | null>(null);
 
   const onSelectNode = (node: StateDTO) => {
-    setSelectedNode(node);
-    setSelectedEdge(null);
+    const state = chain.getState(node.id);
+    if (state) {
+      setSelectedState(state);
+    }
+    setSelectedTransition(null);
   };
 
   const onSelectEdge = (edge: TransitionDTO) => {
-    setSelectedEdge(edge);
-    setSelectedNode(null);
+    setSelectedTransition(edge);
+    setSelectedState(null);
   };
 
   return (
     <AppLayout
       workspace={
-        <ChainFlow chain={exampleChain} onNodeSelect={onSelectNode} onEdgeSelect={onSelectEdge} />
+        <ChainFlow chain={chain} onNodeSelect={onSelectNode} onEdgeSelect={onSelectEdge} />
       }
       sidebar={
         <div>
-          {selectedNode && <StateCard state={selectedNode} />}
-          {selectedEdge && <TransitionRow transition={selectedEdge} />}
-          {!selectedNode && !selectedEdge && (
+          {selectedState && <StateCard state={selectedState} />}
+          {selectedTransition && <TransitionRow transition={selectedTransition} />}
+          {!selectedState && !selectedTransition && (
             <p>Выберите элемент на графе для просмотра информации</p>
           )}
         </div>

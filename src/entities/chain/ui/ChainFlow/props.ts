@@ -1,9 +1,9 @@
-import { ChainDTO } from '../../types';
 import type { StateDTO } from '@entities/state';
 import type { TransitionDTO } from '@entities/transition';
+import { ChainEntity } from '../../types';
 
 export interface ChainFlowProps {
-  chain: ChainDTO;
+  chain: ChainEntity;
   /**
    * Колбек вызывается при клике на узел.
    * Передаёт DTO состояния, связанного с этим узлом.

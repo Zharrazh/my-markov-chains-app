@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import ReactFlow, {
   addEdge,
   Background,
-  Edge,
   ReactFlowProps,
   useEdgesState,
   useNodesState,
@@ -14,8 +13,8 @@ import styles from './styles.module.scss';
 import { CircularNode } from './CircularNode';
 import type { ChainFlowProps } from './props';
 import {
+  assignHandlesToEdges,
   getELKLayoutedElements,
-  getHandlesForEdge,
   transformStatesToNodes,
   transformTransitionsToEdges,
 } from './utils';
@@ -27,6 +26,8 @@ const nodeTypes = {
 export function ChainFlow({ chain, onNodeSelect, onEdgeSelect }: ChainFlowProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const nodeMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
   useEffect(() => {
     async function layout() {
@@ -40,17 +41,9 @@ export function ChainFlow({ chain, onNodeSelect, onEdgeSelect }: ChainFlowProps)
     layout();
   }, [chain]);
 
-  useEffect(() => {
-    async function layout() {
-      const newEdges: Edge[] = edges.map((edge) => ({
-        ...edge,
-        ...getHandlesForEdge(edge, nodes),
-      }));
-
-      setEdges(newEdges);
-    }
-    layout();
-  }, [nodes]);
+  const autoHandledEdges = useMemo(() => {
+    return assignHandlesToEdges(edges, nodeMap);
+  }, [edges, nodeMap]);
 
   const onConnect: NonNullable<ReactFlowProps['onConnect']> = useCallback(
     (connection) => {
@@ -62,32 +55,32 @@ export function ChainFlow({ chain, onNodeSelect, onEdgeSelect }: ChainFlowProps)
   const handleNodeClick: NonNullable<ReactFlowProps['onNodeClick']> = useCallback(
     (_, node) => {
       if (onNodeSelect) {
-        const state = chain.states.find((s) => s.id === node.id);
+        const state = chain.getState(node.id);
         if (state) {
           onNodeSelect(state);
         }
       }
     },
-    [chain.states, onNodeSelect],
+    [chain, onNodeSelect],
   );
 
   const handleEdgeClick: NonNullable<ReactFlowProps['onEdgeClick']> = useCallback(
     (_, edge) => {
       if (onEdgeSelect) {
-        const transition = chain.transitions.find((t) => t.id === edge.id);
+        const transition = chain.getTransition(edge.id);
         if (transition) {
           onEdgeSelect(transition);
         }
       }
     },
-    [chain.transitions, onEdgeSelect],
+    [chain, onEdgeSelect],
   );
 
   return (
     <div className={styles.chainFlowWrapper}>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={autoHandledEdges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}

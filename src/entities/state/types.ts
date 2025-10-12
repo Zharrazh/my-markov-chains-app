@@ -1,3 +1,5 @@
+import { TransitionDTO } from '@entities/transition';
+
 export interface StateDTO {
   id: string;
   label: string;
@@ -6,9 +8,11 @@ export interface StateDTO {
 
 export class StateEntity {
   private dto: StateDTO;
+  private _transitions: TransitionDTO[];
 
-  constructor(dto: StateDTO) {
+  constructor(dto: StateDTO, transitions: TransitionDTO[]) {
     this.dto = dto;
+    this._transitions = transitions;
   }
 
   get id(): string {
@@ -25,6 +29,10 @@ export class StateEntity {
 
   get description(): string | undefined {
     return this.dto.description;
+  }
+
+  get transitions(): TransitionDTO[] {
+    return this._transitions;
   }
 
   set description(value: string | undefined) {

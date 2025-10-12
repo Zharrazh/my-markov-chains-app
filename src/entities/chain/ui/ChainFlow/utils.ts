@@ -26,34 +26,42 @@ export function transformTransitionsToEdges(transitions: TransitionDTO[]): Edge[
   }));
 }
 
-export function getHandlesForEdge(edge: Edge, nodes: Node[]) {
-  const sourceNode = nodes.find((n) => n.id === edge.source);
-  const targetNode = nodes.find((n) => n.id === edge.target);
-
-  if (!sourceNode || !targetNode) return {};
-
+// Функция определения handle на основе sourceNode и targetNode
+function getHandlesForEdge(sourceNode: Node, targetNode: Node) {
   const dx = (targetNode.position?.x ?? 0) - (sourceNode.position?.x ?? 0);
   const dy = (targetNode.position?.y ?? 0) - (sourceNode.position?.y ?? 0);
 
   if (Math.abs(dx) > Math.abs(dy)) {
-    // Горизонталь больше вертикали — значит выбираем левый или правый хендлер
     if (dx > 0) {
-      // Цель справа
       return { sourceHandle: 'right-source', targetHandle: 'left-target' };
     } else {
-      // Цель слева
       return { sourceHandle: 'left-source', targetHandle: 'right-target' };
     }
   } else {
-    // Вертикаль больше или равна — выбираем верхний или нижний хендлер
     if (dy > 0) {
-      // Цель снизу
       return { sourceHandle: 'bottom-source', targetHandle: 'top-target' };
     } else {
-      // Цель сверху
       return { sourceHandle: 'top-source', targetHandle: 'bottom-target' };
     }
   }
+}
+
+// Обёртка: принимает edges и nodeMap, возвращает обновлённый массив edges с хендлерами
+export function assignHandlesToEdges(edges: Edge[], nodeMap: Map<string, Node>) {
+  return edges.map((edge) => {
+    const sourceNode = nodeMap.get(edge.source);
+    const targetNode = nodeMap.get(edge.target);
+
+    if (!sourceNode || !targetNode) {
+      return edge; // если не нашли узлы, возвращаем без изменений
+    }
+
+    const handles = getHandlesForEdge(sourceNode, targetNode);
+    return {
+      ...edge,
+      ...handles,
+    };
+  });
 }
 
 export async function getELKLayoutedElements(nodes: Node[], edges: Edge[]) {
@@ -61,16 +69,6 @@ export async function getELKLayoutedElements(nodes: Node[], edges: Edge[]) {
     id: node.id,
     width: 80,
     height: 80,
-    // ports: [
-    //   { id: 'top-source', side: 'NORTH' },
-    //   { id: 'top-target', side: 'NORTH' },
-    //   { id: 'bottom-source', side: 'SOUTH' },
-    //   { id: 'bottom-target', side: 'SOUTH' },
-    //   { id: 'left-source', side: 'WEST' },
-    //   { id: 'left-target', side: 'WEST' },
-    //   { id: 'right-source', side: 'EAST' },
-    //   { id: 'right-target', side: 'EAST' },
-    // ],
   }));
   const elkEdges = edges.map((edge) => {
     return {
@@ -83,14 +81,13 @@ export async function getELKLayoutedElements(nodes: Node[], edges: Edge[]) {
   const graph = {
     id: 'root',
     layoutOptions: {
-      'elk.algorithm': 'force',
-      'elk.direction': 'RIGHT',
-      'elk.spacing.nodeNodeBetweenLayers': '200',
-      'elk.spacing.nodeNode': '100',
-      'elk.layered.cycleBreaking.strategy': 'GREEDY',
-      'elk.layered.merger.strategy': 'PLACE',
-      'org.eclipse.elk.spacing.edgeEdge': '20',
-      'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
+      'elk.algorithm': 'force', // включаем силовой алгоритм
+      'elk.force.repulsion': '5000', // сила отталкивания между узлами
+      'elk.force.attraction': '0.8', // сила притяжения между связанными узлами
+      'elk.force.timeout': '500', // максимальное время вычислений в миллисекундах
+      'elk.edgeRouting': 'SPLINES', // тип маршрутизации рёбер (опционально)
+      'elk.spacing.nodeNode': '100', // расстояние между узлами
+      'elk.force.temperature': '0.1', // параметр "температуры" для динамики алго
     },
     children: elkNodes,
     edges: elkEdges,
