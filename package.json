@@ -8,7 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "lint:scss": "stylelint **/*.scss",
+    "format:scss": "prettier --write **/*.scss",
+    "lint:js": "eslint src/**/*.{js,ts,tsx}",
+    "format:js": "prettier --write src/**/*.{js,ts,tsx}"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
@@ -43,6 +47,8 @@
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.6.2",
     "sass": "^1.93.2",
+    "stylelint": "^16.25.0",
+    "stylelint-config-standard": "^39.0.1",
     "ts-jest": "^29.4.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",

@@ -1,7 +1,7 @@
 import { ChainDTO, ChainEntity, ChainFlow } from '@entities/chain';
 import { StateDTO, StateEntity } from '@entities/state';
 import { type TransitionDTO } from '@entities/transition';
-import { ChainStateManager, type ChainState } from '@entities/chainState'; // импорт менеджера состояния
+import { ChainStateCard, ChainStateManager, type ChainState } from '@entities/chainState'; // импорт менеджера состояния
 import { AppLayout } from '@shared/AppLayout';
 import { useState } from 'react';
 
@@ -137,7 +137,7 @@ export default function App() {
               Next
             </button>
             <hr />
-            {renderChainState(state)}
+            <ChainStateCard state={chainStateManager.getState()} />
           </div>
 
           {/* Нижняя часть: информация о выбранном элементе */}

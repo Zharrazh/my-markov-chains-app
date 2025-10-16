@@ -1,2 +1,2 @@
-export {AppLayout} from './AppLayout';
-export type {AppLayoutProps} from './props';
+export { AppLayout } from './AppLayout';
+export type { AppLayoutProps } from './props';

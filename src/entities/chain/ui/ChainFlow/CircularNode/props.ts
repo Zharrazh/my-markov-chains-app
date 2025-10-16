@@ -1,1 +1,1 @@
-export interface CircularNodeProps {};
+export interface CircularNodeProps {}

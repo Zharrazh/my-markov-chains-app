@@ -1,38 +1,38 @@
 .circularNode {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    user-select: none;
-    background-color: white;
-  
-    &:hover {
-      box-shadow: 0 0 8px #90caf9;
-    }
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  user-select: none;
+  background-color: white;
+
+  &:hover {
+    box-shadow: 0 0 8px #90caf9;
   }
-  
-  .label {
-    z-index: 2;
-    pointer-events: none;
-    text-align: center;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .handle {
-    width: 12px;
-    height: 12px;
-    background: #222;
-    border-radius: 50%;
-    border: 2px solid #fff;
-  }
-  .selected {
-    box-shadow: 0 0 16px #1976d2;
-  }
+}
+
+.label {
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.handle {
+  width: 12px;
+  height: 12px;
+  background: #222;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.selected {
+  box-shadow: 0 0 16px #1976d2;
+}
