@@ -70,4 +70,10 @@ export class ChainEntity {
   getChain(): ChainDTO {
     return this.chainDTO;
   }
+
+  getTransitionsFromState(stateId: string): TransitionEntity[] {
+    return (this.transitionsFromIdMap[stateId] ?? []).map(
+      (transitionDto) => new TransitionEntity(transitionDto),
+    );
+  }
 }
