@@ -110,7 +110,7 @@ export default function App() {
             <b>Выпавшее число:</b> {state.rolledNumber.toFixed(3)}
             <br />
             <b>Выбран переход:</b> {state.chosenTransition.id} ({state.chosenTransition.fromStateId}{' '}
-            → {state.chosenTransition.toStateId})<br />
+            → {state.chosenTransition.toStateId})
           </>
         );
       case 'Terminated':
@@ -133,10 +133,11 @@ export default function App() {
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Верхняя часть: состояние цепи и кнопка */}
           <div style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-            {renderChainState(state)}
             <button onClick={handleNextClick} style={{ marginTop: '10px' }}>
               Next
             </button>
+            <hr />
+            {renderChainState(state)}
           </div>
 
           {/* Нижняя часть: информация о выбранном элементе */}
