@@ -1,82 +1,95 @@
-import type { FC } from 'react';
+import { Box, Heading, Text, VStack, HStack, HTMLChakraProps, Card, Stat } from '@chakra-ui/react';
+import type { FC, PropsWithChildren } from 'react';
 import type { ChainStateCardProps } from './props';
-import styles from './styles.module.scss';
+import { TransitionEntity } from '@entities/transition';
+import { StateCard } from '@entities/state';
+
+const Section: FC<PropsWithChildren<{ title: string }>> = ({ title, children }) => (
+  <Box mb={4}>
+    <Heading size="sm" mb={2} color="gray.700">
+      {title}
+    </Heading>
+    {children}
+  </Box>
+);
+
+const TransitionItem: FC<{ transition: TransitionEntity }> = ({ transition }) => (
+  <HStack gap={2} fontSize="sm">
+    <Text fontWeight="medium" whiteSpace="nowrap">
+      {transition.label ?? transition.id}
+    </Text>
+    <Text>(p={transition.probability.toFixed(2)})</Text>
+  </HStack>
+);
+
+const CardContainer: FC<HTMLChakraProps<'div'>> = ({ children }) => (
+  <Card.Root>{children}</Card.Root>
+);
 
 export const ChainStateCard: FC<ChainStateCardProps> = ({ state }) => {
   switch (state.type) {
     case 'AtState':
       return (
-        <div className={styles.card}>
-          <h2 className={styles.title}>Текущее состояние (AtState)</h2>
-          <p>
-            <b>ID:</b> {state.state.id}
-          </p>
-          <p>
-            <b>Label:</b> {state.state.label}
-          </p>
-          <p>
-            <b>Описание:</b> {state.state.description}
-          </p>
-        </div>
+        <CardContainer>
+          <Card.Header>
+            <Card.Title>Состояние: {state.state.label}</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Card.Description>{state.state.description}</Card.Description>
+          </Card.Body>
+        </CardContainer>
       );
 
     case 'SelectingTransition':
       return (
-        <div className={styles.card}>
-          <h2 className={styles.title}>Выбор перехода (SelectingTransition)</h2>
-          <p>
-            <b>Выпавшее число:</b> {state.rolledNumber.toFixed(3)}
-          </p>
-          <p>
-            <b>Выбран переход:</b>
-          </p>
-          <ul className={styles.list}>
-            <li>
-              <b>ID:</b> {state.chosenTransition.id}
-            </li>
-            <li>
-              <b>От состояния:</b> {state.chosenTransition.fromStateId}
-            </li>
-            <li>
-              <b>К состоянию:</b> {state.chosenTransition.toStateId}
-            </li>
-            <li>
-              <b>Вероятность:</b> {state.chosenTransition.probability}
-            </li>
-          </ul>
-          <p>
-            <b>Доступные переходы:</b>
-          </p>
-          <ul className={styles.list}>
-            {state.availableTransitions.map((t) => (
-              <li key={t.id}>
-                {t.id}: {t.fromStateId} → {t.toStateId} (p = {t.probability})
-              </li>
-            ))}
-          </ul>
-        </div>
+        <CardContainer>
+          <Card.Header>
+            <Card.Title>Выбор перехода</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Section title="Все доступные переходы">
+              <VStack gap={2} pl={2} align="stretch">
+                {state.availableTransitions.map((transition) => (
+                  <TransitionItem key={transition.id} transition={transition} />
+                ))}
+              </VStack>
+            </Section>
+
+            <Section title="Подкидываем кубик">
+              <Stat.Root>
+                <Stat.ValueText>{state.rolledNumber.toFixed(3)}</Stat.ValueText>
+              </Stat.Root>
+            </Section>
+
+            <Section title="Выбран переход">
+              <TransitionItem transition={state.chosenTransition} />
+            </Section>
+          </Card.Body>
+        </CardContainer>
       );
 
     case 'Terminated':
       return (
-        <div className={styles.card}>
-          <h2 className={styles.title}>Цепь завершена (Terminated)</h2>
-          <p>
-            <b>Конечное состояние:</b>
-          </p>
-          <p>
-            <b>ID:</b> {state.terminalState.id}
-          </p>
-          <p>
-            <b>Label:</b> {state.terminalState.label}
-          </p>
-          <p>
-            <b>Описание:</b> {state.terminalState.description}
-          </p>
-        </div>
+        <CardContainer textAlign="center">
+          <Card.Header>
+            <Card.Title>Цепь завершена</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Section
+              title="Финальное состояние:
+"
+            >
+              <StateCard state={state.terminalState} />
+            </Section>
+          </Card.Body>
+        </CardContainer>
       );
 
     default:
-      return <div className={styles.card}>Неизвестное состояние</div>;
+      return (
+        <CardContainer textAlign="center" color="gray.400">
+          <Text>Неизвестное состояние</Text>
+        </CardContainer>
+      );
   }
 };
