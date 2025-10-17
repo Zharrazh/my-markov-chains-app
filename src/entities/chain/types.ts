@@ -8,7 +8,6 @@ export interface ChainDTO {
   label?: string;
   description?: string;
   initialStateId: string;
-  terminalStateId?: string;
   states: StateDTO[];
   transitions: TransitionDTO[];
 }
@@ -39,9 +38,7 @@ export class ChainEntity {
   getState(id: string): StateEntity | null {
     const dto = this.statesMap.get(id);
     if (dto) {
-      const transitionsFromThis = this.transitionsFromIdMap[id] ?? [];
-
-      return new StateEntity(dto, transitionsFromThis);
+      return new StateEntity(dto);
     }
     return null;
   }
@@ -71,8 +68,8 @@ export class ChainEntity {
     return this.chainDTO;
   }
 
-  getTransitionsFromState(stateId: string): TransitionEntity[] {
-    return (this.transitionsFromIdMap[stateId] ?? []).map(
+  getTransitionsFromState(stateId: string): TransitionEntity[] | null {
+    return (this.transitionsFromIdMap[stateId] ?? null)?.map(
       (transitionDto) => new TransitionEntity(transitionDto),
     );
   }

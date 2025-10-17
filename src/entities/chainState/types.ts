@@ -28,15 +28,15 @@ export interface TerminatedState extends BaseState {
 export type ChainState = AtStateState | SelectingTransitionState | TerminatedState;
 
 export class ChainStateManager {
-  private chain: ChainEntity;
+  private _chain: ChainEntity;
   private currentState: ChainState;
 
   constructor(chain: ChainEntity, initialState?: ChainState) {
-    this.chain = chain;
+    this._chain = chain;
     if (initialState) {
       this.currentState = initialState;
     } else {
-      const initialStateEntity = this.chain.getState(this.chain.getChain().initialStateId);
+      const initialStateEntity = this._chain.getState(this._chain.getChain().initialStateId);
       if (!initialStateEntity) throw new Error('Initial state not found in chain');
       this.currentState = { type: 'AtState', state: initialStateEntity };
     }
@@ -46,17 +46,21 @@ export class ChainStateManager {
     return this.currentState;
   }
 
+  get chain(): ChainEntity {
+    return this._chain;
+  }
+
   next(): ChainStateManager {
     switch (this.currentState.type) {
       case 'AtState': {
-        const transitions = this.chain.getTransitionsFromState(this.currentState.state.id);
-        if (transitions.length === 0) {
-          if (this.currentState.state.id === this.chain.getChain().terminalStateId) {
+        const transitions = this._chain.getTransitionsFromState(this.currentState.state.id);
+        if (!transitions) {
+          if (this.currentState.state.isTerminal) {
             const terminatedState: ChainState = {
               type: 'Terminated',
               terminalState: this.currentState.state,
             };
-            return new ChainStateManager(this.chain, terminatedState);
+            return new ChainStateManager(this._chain, terminatedState);
           } else {
             throw new Error('Нет переходов и состояние не терминальное');
           }
@@ -80,26 +84,26 @@ export class ChainStateManager {
           rolledNumber,
           chosenTransition,
         };
-        return new ChainStateManager(this.chain, selectingTransitionState);
+        return new ChainStateManager(this._chain, selectingTransitionState);
       }
 
       case 'SelectingTransition': {
-        const nextState = this.chain.getState(this.currentState.chosenTransition.toStateId);
+        const nextState = this._chain.getState(this.currentState.chosenTransition.toStateId);
         if (!nextState) {
           throw new Error('Следующее состояние не найдено');
         }
-        if (nextState.id === this.chain.getChain().terminalStateId) {
+        if (nextState.isTerminal) {
           const terminatedState: ChainState = {
             type: 'Terminated',
             terminalState: nextState,
           };
-          return new ChainStateManager(this.chain, terminatedState);
+          return new ChainStateManager(this._chain, terminatedState);
         } else {
           const atState: ChainState = {
             type: 'AtState',
             state: nextState,
           };
-          return new ChainStateManager(this.chain, atState);
+          return new ChainStateManager(this._chain, atState);
         }
       }
 

@@ -1,18 +1,15 @@
-import { TransitionDTO } from '@entities/transition';
-
 export interface StateDTO {
   id: string;
   label: string;
   description?: string;
+  isTerminal?: boolean;
 }
 
 export class StateEntity {
   private dto: StateDTO;
-  private _transitions: TransitionDTO[];
 
-  constructor(dto: StateDTO, transitions: TransitionDTO[]) {
+  constructor(dto: StateDTO) {
     this.dto = dto;
-    this._transitions = transitions;
   }
 
   get id(): string {
@@ -31,16 +28,20 @@ export class StateEntity {
     return this.dto.description;
   }
 
-  get transitions(): TransitionDTO[] {
-    return this._transitions;
-  }
-
   set description(value: string | undefined) {
     this.dto.description = value;
   }
 
   rename(newLabel: string) {
     this.label = newLabel;
+  }
+
+  get isTerminal(): boolean {
+    return !!this.dto.isTerminal;
+  }
+
+  set isTerminal(value: boolean) {
+    this.dto.isTerminal = value;
   }
 
   toDTO(): StateDTO {

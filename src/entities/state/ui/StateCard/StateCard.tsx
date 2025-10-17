@@ -1,41 +1,43 @@
+import { Card, For, Text } from '@chakra-ui/react';
+import { TransitionRow } from '@entities/transition';
 import type { FC } from 'react';
 import type { StateCardProps } from './props';
 import styles from './styles.module.scss';
-import { TransitionRow } from '@entities/transition';
 
 const MAX_TRANSITIONS_TO_SHOW = 5; // Максимальное количество переходов для показа
 
-export const StateCard: FC<StateCardProps> = ({ state, onClick }) => {
-  const transitionsCount = state.transitions?.length ?? 0;
-  const visibleTransitions = state.transitions?.slice(0, MAX_TRANSITIONS_TO_SHOW) ?? [];
+export const StateCard: FC<StateCardProps> = ({ state, transitions, onClick }) => {
+  const transitionsCount = transitions?.length ?? 0;
+  const visibleTransitions = transitions?.slice(0, MAX_TRANSITIONS_TO_SHOW) ?? [];
 
   return (
-    <div
-      className={styles.stateCard}
-      onClick={onClick}
-      tabIndex={0}
-      role="button"
-      aria-label={`State ${state.label}`}
-    >
-      <h3 className={styles.label}>{state.label}</h3>
-      {state.description && <p className={styles.description}>{state.description}</p>}
-      {transitionsCount > 0 ? (
-        <>
-          <p className={styles.transitions}>Transitions: {transitionsCount}</p>
-          <div className={styles.transitionsList}>
-            {visibleTransitions.map((transition) => (
-              <TransitionRow key={transition.id} transition={transition} />
-            ))}
-          </div>
-          {transitionsCount > MAX_TRANSITIONS_TO_SHOW && (
-            <p className={styles.moreTransitions}>
-              +{transitionsCount - MAX_TRANSITIONS_TO_SHOW} more
-            </p>
-          )}
-        </>
-      ) : (
-        <p className={styles.noTransitions}>No transitions</p>
-      )}
-    </div>
+    <Card.Root onClick={onClick}>
+      <Card.Header>
+        <Card.Title>{state.label}</Card.Title>
+        <Card.Description>{state.description}</Card.Description>
+      </Card.Header>
+
+      <Card.Body>
+        {transitions && (
+          <>
+            <Text mb={1} textStyle={'sm'}>
+              Переходы:
+            </Text>
+            <For
+              each={visibleTransitions}
+              fallback={<Text className={styles.noTransitions}>Переходов нет</Text>}
+            >
+              {(transition) => <TransitionRow key={transition.id} transition={transition} />}
+            </For>
+
+            {transitionsCount > MAX_TRANSITIONS_TO_SHOW && (
+              <Text className={styles.moreTransitions}>
+                +{transitionsCount - MAX_TRANSITIONS_TO_SHOW} more
+              </Text>
+            )}
+          </>
+        )}
+      </Card.Body>
+    </Card.Root>
   );
 };

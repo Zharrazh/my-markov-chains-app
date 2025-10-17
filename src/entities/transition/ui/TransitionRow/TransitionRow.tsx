@@ -1,15 +1,12 @@
+import { HStack, Text } from '@chakra-ui/react';
+import { TransitionDTO } from '@entities/transition/types';
 import type { FC } from 'react';
-import type { TransitionRowProps } from './props';
-import styles from './styles.module.scss';
 
-export const TransitionRow: FC<TransitionRowProps> = ({ transition }) => {
-  return (
-    <div className={styles.transition}>
-      <div className={styles.label}>{transition.label ?? 'Transition'}</div>
-      <div className={styles.probability}>Probability: {transition.probability}</div>
-      <div className={styles.to}>
-        To: <strong>{transition.toStateId}</strong>
-      </div>
-    </div>
-  );
-};
+export const TransitionRow: FC<{ transition: TransitionDTO }> = ({ transition }) => (
+  <HStack gap={2} fontSize="sm">
+    <Text fontWeight="medium" whiteSpace="nowrap">
+      {transition.label ?? transition.id}
+    </Text>
+    <Text>(p={transition.probability.toFixed(2)})</Text>
+  </HStack>
+);

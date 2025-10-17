@@ -39,6 +39,7 @@ export function ChainFlow({ chain, onNodeSelect, onEdgeSelect }: ChainFlowProps)
       setEdges(layouted.edges);
     }
     layout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain]);
 
   const autoHandledEdges = useMemo(() => {
